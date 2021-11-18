@@ -1,0 +1,24 @@
+{
+  "name": "mirror",
+  "version": "1.0.0",
+  "description": "A simple webRTC voice-calling and streaming app",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SaoodImran123/Mirror.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SaoodImran123/Mirror/issues"
+  },
+  "homepage": "https://github.com/SaoodImran123/Mirror#readme",
+  "dependencies": {
+    "express": "4.17.1",
+    "socket.io": "2.3.0"
+  }
+}
