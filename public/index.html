@@ -2,16 +2,17 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <link rel="shortcut icon" href="#">
   <title>Video calling</title>
 </head>
 <body>
 <div class="container">
-  <form>
+  <form action="room.html" method="GET">
     <p>
       <label>Name: </label>
       <input type="text" id="userName" placeholder="John Doe..."/>
     </p>
-    <button type="button" onclick="sendUserName()">Create Room!</button>
+    <input type="submit">Create Room!</button>
   </form>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>

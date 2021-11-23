@@ -1,10 +1,9 @@
+
 // Creating the peer
 const peer = new RTCPeerConnection({
-  iceServers: [
-    {
-      urls: "stun:stun.stunprotocol.org"
-    }
-  ]
+  iceServers: [{
+    urls: "stun:stun.stunprotocol.org"
+  }]
 });
 
 // Connecting to socket
@@ -15,6 +14,8 @@ const onSocketConnected = async () => {
     audio: true,
     video: true
   };
+
+  // Get user's media devices (camera/audio)
   const stream = await navigator.mediaDevices.getUserMedia(constraints);
   document.querySelector('#localVideo').srcObject = stream;
   stream.getTracks().forEach(track => peer.addTrack(track, stream));
@@ -26,7 +27,7 @@ let callButton = document.querySelector('#call');
 callButton.addEventListener('click', async () => {
   const localPeerOffer = await peer.createOffer();
   await peer.setLocalDescription(new RTCSessionDescription(localPeerOffer));
-  
+
   sendMediaOffer(localPeerOffer);
 });
 
@@ -63,7 +64,7 @@ peer.addEventListener('track', (event) => {
   document.querySelector('#remoteVideo').srcObject = stream;
 })
 
-let selectedUser;
+let selectedUser = document.querySelector('#key').value;
 
 const sendMediaAnswer = (peerAnswer, data) => {
   socket.emit('mediaAnswer', {
@@ -74,10 +75,11 @@ const sendMediaAnswer = (peerAnswer, data) => {
 }
 
 const sendMediaOffer = (localPeerOffer) => {
+  console.log(selectedUser);
   socket.emit('mediaOffer', {
     offer: localPeerOffer,
     from: socket.id,
-    to: selectedUser
+    to: document.querySelector('#key').value
   });
 };
 
@@ -88,12 +90,15 @@ const sendIceCandidate = (event) => {
   });
 }
 
-const onUpdateUserList = ({ userIds }) => {
+const onUpdateUserList = ({
+  userIds
+}) => {
+  document.querySelector('#userId').textContent = socket.id;
   const usersList = document.querySelector('#usersList');
   const usersToDisplay = userIds.filter(id => id !== socket.id);
 
   usersList.innerHTML = '';
-  
+
   usersToDisplay.forEach(user => {
     const userItem = document.createElement('div');
     userItem.innerHTML = user;
@@ -104,7 +109,7 @@ const onUpdateUserList = ({ userIds }) => {
         element.classList.remove('user-item--touched');
       })
       userItem.classList.add('user-item--touched');
-      selectedUser = user;
+      //selectedUser = user;
     });
     usersList.appendChild(userItem);
   });
