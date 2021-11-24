@@ -8,7 +8,7 @@ module.exports = (io) => {
         // Initiate the connection process as soon as the client connects
         peers[socket.id] = socket;
 
-        // MR traffic guy
+        // Create own 
         room[socket.id] = new Array();
         room[socket.id].push(socket);
         socket.emit('initialSocket', socket.id);
@@ -17,15 +17,15 @@ module.exports = (io) => {
          * Event listener when 
          */
         socket.on('connectToRoom', data => {
-            console.log(room[data]);
-            room[data].push(socket);
+            if(room.hasOwnProperty(data)){
+                room[data].push(socket);
 
-            // send everyone in the room an event
-            for (var i = 0; i < room[data].length; i++){
-                if (room[data][i].id === socket.id) continue
-                console.log('sending init receive to ' + socket.id)
-                console.log(room[data].length);
-                room[data][i].emit('initReceive', socket.id)
+                // send everyone in the room an event
+                for (var i = 0; i < room[data].length; i++){
+                    if (room[data][i].id === socket.id) continue
+                    console.log('sending init receive to ' + socket.id)
+                    room[data][i].emit('initReceive', socket.id)
+                }
             }
         })
 
