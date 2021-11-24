@@ -1,49 +1,34 @@
-const express = require('express');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
+const express = require('express')
+const app = express()
+const httpolyglot = require('httpolyglot')
+const https = require('https')
 
-const app = express();
+//////// CONFIGURATION ///////////
 
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+// insert your own ssl certificate and keys
+const options = {
+    key: fs.readFileSync(path.join(__dirname,'..','ssl','key.pem'), 'utf-8'),
+    cert: fs.readFileSync(path.join(__dirname,'..','ssl','cert.pem'), 'utf-8')
+}
 
-app.use(express.static(path.join(__dirname, '../public')));
+const port = process.env.PORT || 3012
 
-let connectedUsers = [];
+////////////////////////////
 
-io.on('connection', socket => {
-  connectedUsers.push(socket.id);
+require('./routes')(app)
 
-  socket.on('disconnect', () => {
-    connectedUsers = connectedUsers.filter(user => user !== socket.id)
-    socket.broadcast.emit('update-user-list', { userIds: connectedUsers })
-  })
+const httpsServer = httpolyglot.createServer(options, app)
+const io = require('socket.io')(httpsServer)
+require('./socketController')(io)
 
-  socket.on('mediaOffer', data => {
-    socket.to(data.to).emit('mediaOffer', {
-      from: data.from,
-      offer: data.offer
-    });
-  });
-  
-  socket.on('mediaAnswer', data => {
-    socket.to(data.to).emit('mediaAnswer', {
-      from: data.from,
-      answer: data.answer
-    });
-  });
 
-  socket.on('iceCandidate', data => {
-    socket.to(data.to).emit('remotePeerIceCandidate', {
-      candidate: data.candidate
-    })
-  })
+httpsServer.listen(port, () => {
+    console.log(`listening on port https://localhost:3012/`)
+})
 
-  socket.on('requestUserList', () => {
-    socket.emit('update-user-list', { userIds: connectedUsers });
-    socket.broadcast.emit('update-user-list', { userIds: connectedUsers });
-  });
-});
 
-http.listen(3000, () => {
-  console.log('listening on http://localhost:3000/');
-});
+
+
+

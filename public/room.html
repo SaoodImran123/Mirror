@@ -3,23 +3,30 @@
 
 <head>
     <meta charset="utf-8">
-    <link rel="shortcut icon" href="#">
+    
     <title>Video calling</title>
 </head>
 
 <body>
     <div class="container">
         My user id: <div id="userId"></div>
-        Remote camera: <video id="remoteVideo" playsinline autoplay></video>
-        My camera: <video id="localVideo" playsinline autoplay muted></video>
+        <div id="videos" class="container">
+            <video id="localVideo" class="vid" autoplay muted></video>
+        </div>
 
         <div id="usersList">
             No users connected
         </div>
         <input type="text" id="key" placeholder="Enter key"/>
         <button id="call">Call</button>
+        <div style="display:block">
+            <button id="switchButton" class="settings" onclick="setScreen()">Screen Share</button>
+            <button id="muteButton" class="settings" onclick="toggleMute()">Unmuted</button>
+            <button id="vidButton" class="settings" onclick="toggleVid()">Video Enabled</button>
+        </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+    <script lang="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script src="/simple-peer/simplepeer.min.js"></script>
     <script src="index.js"></script>
 </body>
 
