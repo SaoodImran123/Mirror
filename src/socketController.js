@@ -4,7 +4,7 @@ room = {}
 module.exports = (io) => {
     io.on('connect', (socket) => {
         console.log('a client is connected')
-
+        
         // Initiate the connection process as soon as the client connects
         peers[socket.id] = socket;
 
@@ -18,12 +18,13 @@ module.exports = (io) => {
          */
         socket.on('connectToRoom', data => {
             console.log(room[data]);
-            console.log(data);
-            room[data].push(socket.id);
-            // connect to the room
+            room[data].push(socket);
+
+            // send everyone in the room an event
             for (var i = 0; i < room[data].length; i++){
                 if (room[data][i].id === socket.id) continue
                 console.log('sending init receive to ' + socket.id)
+                console.log(room[data].length);
                 room[data][i].emit('initReceive', socket.id)
             }
         })
