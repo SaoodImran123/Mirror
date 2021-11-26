@@ -1,6 +1,6 @@
 peers = {}
 room = {}
-
+key = null;
 
 module.exports = (io) => {
     io.on('connect', (socket) => {
@@ -9,19 +9,18 @@ module.exports = (io) => {
         // Initiate the connection process as soon as the client connects
         peers[socket.id] = socket;
         
-        let key = (Math.random() + 1).toString(36).substring(7);
+        // Generate a room key
+        key = (Math.random() + 1).toString(36).substring(7);
         while(room.hasOwnProperty(key)){
             key = (Math.random() + 1).toString(36).substring(7);
         }
         
-        // Create own 
+        // Create own room with key
         room[key] = new Array();
         room[key].push(socket);
         socket.emit('initialSocket', key);
 
-        /**
-         * Event listener when 
-         */
+        // Event listener when joining a room
         socket.on('connectToRoom', data => {
             if(room.hasOwnProperty(data)){
                 room[data].push(socket);
@@ -32,6 +31,11 @@ module.exports = (io) => {
                     console.log('sending init receive to ' + socket.id);
                     room[data][i].emit('initReceive', socket.id);
                 }
+
+                // Delete own room so users cant join
+                delete room[key]
+                key = data;
+                socket.emit('initialSocket', key);
             }
         })
 
@@ -50,10 +54,28 @@ module.exports = (io) => {
         /**
          * remove the disconnected peer connection from all other connected clients
          */
-        socket.on('disconnect', () => {
+        socket.on('disconnect', roomKey => {
             console.log('socket disconnected ' + socket.id)
+
             socket.broadcast.emit('removePeer', socket.id)
             delete peers[socket.id]
+            while(room.hasOwnProperty(roomKey)){
+                for (let x = 0; x < room[roomKey].length; i++){
+                    if (room[roomKey][x].id == socket.id){
+                        delete room[roomKey][x];
+
+                        // Generate a new room key
+                        key = (Math.random() + 1).toString(36).substring(7);
+                        while(room.hasOwnProperty(key)){
+                            key = (Math.random() + 1).toString(36).substring(7);
+                        }
+                        room[key] = new Array();
+                        room[key].push(socket);
+                        socket.emit('initialSocket', key);
+                    }
+                }
+            }
+
         })
 
         /**
