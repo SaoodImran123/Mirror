@@ -187,6 +187,7 @@ function addPeer(socket_id, am_initiator) {
 
   peers[socket_id].on('data', data => {
     console.log('message from: ' + socket_id + " data: " + data)
+    displayMsg(socket_id, data)
   })
 }
 
@@ -317,7 +318,14 @@ function updateButtons() {
 function sendChat() {
   var text = document.getElementById("chat_text_field");
   console.log("sent: " + text.value);
+  displayMsg(document.getElementById('userName').innerHTML, text.value)
   for (let socket_id in peers) {
     peers[socket_id].send(text.value);
   }
+}
+
+function displayMsg(user, msg){
+  var newMsg = document.createElement("p");
+  newMsg.innerHTML = user + ": " + msg;
+  document.getElementById('chatbox').appendChild(newMsg);
 }
