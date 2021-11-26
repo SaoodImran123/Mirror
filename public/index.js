@@ -52,7 +52,8 @@ navigator.mediaDevices.getUserMedia(constraints).then(stream => {
 
   init()
 
-}).catch(e => alert(`getusermedia error ${e.name}`))
+//}).catch(e => alert(`getusermedia error ${e.name}`))
+}).catch()
 
 /**
  * initialize the socket connections
@@ -91,6 +92,12 @@ function init() {
   socket.on('signal', data => {
     peers[data.socket_id].signal(data.signal)
   })
+
+  // Yale
+  document.getElementById("chat_send_btn").onclick = () => {
+    sendChat();
+    
+  }
 
   document.getElementById("call").onclick = () =>{
     connectToRoom();
@@ -163,6 +170,10 @@ function addPeer(socket_id, am_initiator) {
     newVid.onclick = () => openPictureMode(newVid)
     newVid.ontouchstart = (e) => openPictureMode(newVid)
     videos.appendChild(newVid)
+  })
+
+  peers[socket_id].on('data', data => {
+    console.log('message from: ' + socket_id + " data: " + data)
   })
 }
 
@@ -283,5 +294,16 @@ function updateButtons() {
   }
   for (let index in localStream.getAudioTracks()) {
     muteButton.innerText = localStream.getAudioTracks()[index].enabled ? "Unmuted" : "Muted"
+  }
+}
+
+/**
+ * Chat functions
+ */
+function sendChat() {
+  var text = document.getElementById("chat_text_field");
+  console.log("sent: " + text.value);
+  for (let socket_id in peers) {
+    peers[socket_id].send(text.value);
   }
 }
