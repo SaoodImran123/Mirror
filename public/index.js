@@ -1,4 +1,13 @@
 /**
+ * Get name from Param and assign it to user
+ * TODO: assign name to user
+ */
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const userName = urlParams.get('userName')
+document.getElementById('userName').innerHTML=userName
+
+/**
  * Socket.io socket
  */
 let socket;

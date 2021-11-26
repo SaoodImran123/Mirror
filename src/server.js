@@ -29,6 +29,17 @@ httpsServer.listen(port, () => {
 })
 
 
+// Parse URL-encoded bodies (as sent by HTML forms)
+app.use(express.urlencoded());
+
+// Parse JSON bodies (as sent by API clients)
+// app.use(express.json());
+
+const querystring = require('querystring'); 
+app.post('/createRoom', (req,res)=>{
+    console.log(req.body);
+    res.redirect('room.html?userName='+req.body.userName);
+});
 
 
 
