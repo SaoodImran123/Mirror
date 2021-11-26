@@ -61,7 +61,18 @@ module.exports = (io) => {
             delete peers[socket.id]
             while(room.hasOwnProperty(roomKey)){
                 for (let x = 0; x < room[roomKey].length; i++){
-                    if (room[roomKey][x].id == socket.id) delete room[roomKey][x]
+                    if (room[roomKey][x].id == socket.id){
+                        delete room[roomKey][x];
+
+                        // Generate a new room key
+                        key = (Math.random() + 1).toString(36).substring(7);
+                        while(room.hasOwnProperty(key)){
+                            key = (Math.random() + 1).toString(36).substring(7);
+                        }
+                        room[key] = new Array();
+                        room[key].push(socket);
+                        socket.emit('initialSocket', key);
+                    }
                 }
             }
 

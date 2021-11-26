@@ -60,8 +60,8 @@ navigator.mediaDevices.getUserMedia(constraints).then(stream => {
 function init() {
   socket = io()
 
-  socket.on('initialSocket', socket_id => {
-    document.getElementById("roomKey").textContent = socket_id;
+  socket.on('initialSocket', key => {
+    document.getElementById("roomKey").textContent = key;
   })
 
   socket.on('initReceive', socket_id => {
