@@ -50,10 +50,15 @@ module.exports = (io) => {
         /**
          * remove the disconnected peer connection from all other connected clients
          */
-        socket.on('disconnect', () => {
+        socket.on('disconnect', roomKey => {
             console.log('socket disconnected ' + socket.id)
+
             socket.broadcast.emit('removePeer', socket.id)
             delete peers[socket.id]
+            for (let x = 0; x < room[roomKey].length; i++){
+                if (room[roomKey][x].id == socket.id) delete room[roomKey][x]
+            }
+
         })
 
         /**

@@ -81,7 +81,7 @@ function init() {
     removePeer(socket_id)
   })
 
-  socket.on('disconnect', () => {
+  socket.on('disconnect', roomKey => {
     console.log('GOT DISCONNECTED')
     for (let socket_id in peers) {
       removePeer(socket_id)
@@ -107,7 +107,11 @@ function connectToRoom() {
   console.log(key);
   socket.emit('connectToRoom', key);
 }
-
+function disconnectCall() {
+  var key = document.getElementById("roomKey").value;
+  console.log(key);
+  socket.emit('disconnect', key);
+}
 /**
  * Remove a peer with given socket_id. 
  * Removes the video element and deletes the connection
@@ -235,6 +239,7 @@ function setScreen() {
   })
   updateButtons()
 }
+
 
 /**
  * Disables and removes the local stream and all the connections to other peers.

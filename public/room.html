@@ -9,7 +9,7 @@
 
 <body>
     <div class="container">
-        Room key: <div id="roomKey"></div>
+        Room Key: <div id="roomKey"></div>
         <div id="videos" class="container">
             <video id="localVideo" class="vid" autoplay muted></video>
         </div>
@@ -23,6 +23,7 @@
             <button id="switchButton" class="settings" onclick="setScreen()">Screen Share</button>
             <button id="muteButton" class="settings" onclick="toggleMute()">Unmuted</button>
             <button id="vidButton" class="settings" onclick="toggleVid()">Video Enabled</button>
+            <button id="disconnectButton" class="settings" onclick="disconnectCall()">Disconnect</button>
         </div>
     </div>
     <script lang="text/javascript" src="/socket.io/socket.io.js"></script>
