@@ -61,7 +61,7 @@ function init() {
   socket = io()
 
   socket.on('initialSocket', socket_id => {
-    document.getElementById("userId").textContent = socket_id;
+    document.getElementById("roomKey").textContent = socket_id;
   })
 
   socket.on('initReceive', socket_id => {

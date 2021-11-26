@@ -1,17 +1,23 @@
 peers = {}
 room = {}
 
+
 module.exports = (io) => {
     io.on('connect', (socket) => {
         console.log('a client is connected')
         
         // Initiate the connection process as soon as the client connects
         peers[socket.id] = socket;
-
+        
+        let key = (Math.random() + 1).toString(36).substring(7);
+        while(room.hasOwnProperty(key)){
+            key = (Math.random() + 1).toString(36).substring(7);
+        }
+        
         // Create own 
-        room[socket.id] = new Array();
-        room[socket.id].push(socket);
-        socket.emit('initialSocket', socket.id);
+        room[key] = new Array();
+        room[key].push(socket);
+        socket.emit('initialSocket', key);
 
         /**
          * Event listener when 
@@ -23,8 +29,8 @@ module.exports = (io) => {
                 // send everyone in the room an event
                 for (var i = 0; i < room[data].length; i++){
                     if (room[data][i].id === socket.id) continue
-                    console.log('sending init receive to ' + socket.id)
-                    room[data][i].emit('initReceive', socket.id)
+                    console.log('sending init receive to ' + socket.id);
+                    room[data][i].emit('initReceive', socket.id);
                 }
             }
         })
