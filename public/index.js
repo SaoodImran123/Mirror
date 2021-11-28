@@ -19,6 +19,8 @@ let localStream = null;
  * All peer connections
  */
 let peers = {}
+let rooms = {}
+let key = null;
 
 // redirect if not https
 if (location.href.substr(0, 5) !== 'https')
@@ -38,31 +40,26 @@ const configuration = {
   ]
 }
 
-/**
- * UserMedia constraints
- */
-let constraints = {
-  audio: true,
-  video: true
-}
-
 /////////////////////////////////////////////////////////
 
-constraints.video.facingMode = {
-  ideal: "user"
-}
 
-// enabling the camera at startup
-navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-  console.log('Received local stream');
+// Check if user has media devices
+navigator.mediaDevices.enumerateDevices()
+  .then(devices => {
+    const cams = devices.filter(device => device.kind == "videoinput");
+    const mics = devices.filter(device => device.kind == "audioinput");
 
-  localVideo.srcObject = stream;
-  localStream = stream;
+    const constraints = { video: cams.length > 0, audio: mics.length > 0 };
+    return navigator.mediaDevices.getUserMedia(constraints);
+  })
+  .then(stream => {
+    console.log('Received local stream');
+    localVideo.srcObject = stream;
+    localStream = stream;
 
-  init()
+    init();
+  }).catch();
 
-//}).catch(e => alert(`getusermedia error ${e.name}`))
-}).catch()
 
 /**
  * initialize the socket connections
@@ -70,13 +67,31 @@ navigator.mediaDevices.getUserMedia(constraints).then(stream => {
 function init() {
   socket = io()
 
-  socket.on('initialSocket', key => {
+  // Used to get initial room key
+  socket.on('initialSocket', roomKey => {
+    // set this room key as the global variable
+    key = roomKey;
     document.getElementById("roomKey").textContent = key;
+    rooms[key] = {};
+  })
+
+  // Called when joining/leaving a room
+  socket.on('updateRoomKey', data => {
+    key = data.newKey;
+    document.getElementById("roomKey").textContent = key;
+    rooms[key] = {};
+    if(!data.leaving){
+      delete rooms[data.oldKey];
+    }else{
+      if (Object.keys(rooms[data.oldKey]).length == 0){
+        delete rooms[data.oldKey];
+      }
+    }
   })
 
   socket.on('initReceive', socket_id => {
     console.log('INIT RECEIVE ' + socket_id)
-    addPeer(socket_id, false)
+    addPeer(socket_id, false);
 
     socket.emit('initSend', socket_id)
   })
@@ -91,15 +106,15 @@ function init() {
     removePeer(socket_id)
   })
 
-  socket.on('disconnect', roomKey => {
+  socket.on('disconnect', () => {
     console.log('GOT DISCONNECTED')
-    for (let socket_id in peers) {
+    for (let socket_id in rooms[key]) {
       removePeer(socket_id)
     }
   })
 
   socket.on('signal', data => {
-    peers[data.socket_id].signal(data.signal)
+    rooms[key][data.socket_id].signal(data.signal)
   })
 
   // Yale
@@ -119,13 +134,15 @@ function init() {
  * @param {String} socket_id 
  */
 function connectToRoom() {
-  var key = document.getElementById("key").value;
-  console.log(key);
-  socket.emit('connectToRoom', key);
+  var oldKey = document.getElementById("roomKey").value;
+  var roomKey = document.getElementById("key").value;
+  socket.emit('connectToRoom', {
+    targetRoom: roomKey,
+    oldKey: oldKey
+  });
 }
 function disconnectCall() {
-  var key = document.getElementById("roomKey").value;
-  console.log(key);
+  socket.emit('disconnectCall', key);
   socket.emit('disconnect', key);
 }
 /**
@@ -147,8 +164,8 @@ function removePeer(socket_id) {
     videoEl.srcObject = null
     videoEl.parentNode.removeChild(videoEl)
   }
-  if (peers[socket_id]) peers[socket_id].destroy()
-  delete peers[socket_id]
+  if (rooms[key][socket_id]) rooms[key][socket_id].destroy()
+  delete rooms[key][socket_id]
 }
 
 /**
@@ -160,20 +177,20 @@ function removePeer(socket_id) {
  *                  Set to false if the peer receives the connection. 
  */
 function addPeer(socket_id, am_initiator) {
-  peers[socket_id] = new SimplePeer({
+  rooms[key][socket_id] = new SimplePeer({
     initiator: am_initiator,
     stream: localStream,
     config: configuration
   })
 
-  peers[socket_id].on('signal', data => {
+  rooms[key][socket_id].on('signal', data => {
     socket.emit('signal', {
       signal: data,
       socket_id: socket_id
     })
   })
 
-  peers[socket_id].on('stream', stream => {
+  rooms[key][socket_id].on('stream', stream => {
     let newVid = document.createElement('video')
     newVid.srcObject = stream
     newVid.id = socket_id
@@ -185,7 +202,7 @@ function addPeer(socket_id, am_initiator) {
     videos.appendChild(newVid)
   })
 
-  peers[socket_id].on('data', data => {
+  rooms[key][socket_id].on('data', data => {
     console.log('message from: ' + socket_id + " data: " + data)
     displayMsg(socket_id, data)
   })
@@ -219,11 +236,11 @@ function switchMedia() {
   localVideo.srcObject = null
   navigator.mediaDevices.getUserMedia(constraints).then(stream => {
 
-    for (let socket_id in peers) {
-      for (let index in peers[socket_id].streams[0].getTracks()) {
+    for (let socket_id in rooms) {
+      for (let index in rooms[key][socket_id].streams[0].getTracks()) {
         for (let index2 in stream.getTracks()) {
-          if (peers[socket_id].streams[0].getTracks()[index].kind === stream.getTracks()[index2].kind) {
-            peers[socket_id].replaceTrack(peers[socket_id].streams[0].getTracks()[index], stream.getTracks()[index2], peers[socket_id].streams[0])
+          if (rooms[key][socket_id].streams[0].getTracks()[index].kind === stream.getTracks()[index2].kind) {
+            rooms[key][socket_id].replaceTrack(rooms[key][socket_id].streams[0].getTracks()[index], stream.getTracks()[index2], rooms[key][socket_id].streams[0])
             break;
           }
         }
@@ -276,7 +293,7 @@ function removeLocalStream() {
     localVideo.srcObject = null
   }
 
-  for (let socket_id in peers) {
+  for (let socket_id in rooms[key]) {
     removePeer(socket_id)
   }
 }
@@ -319,8 +336,8 @@ function sendChat() {
   var text = document.getElementById("chat_text_field");
   console.log("sent: " + text.value);
   displayMsg(document.getElementById('userName').innerHTML, text.value)
-  for (let socket_id in peers) {
-    peers[socket_id].send(text.value);
+  for (let socket_id in rooms[key]) {
+    rooms[key][socket_id].send(text.value);
   }
 }
 
