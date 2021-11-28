@@ -259,11 +259,11 @@ function switchMedia() {
  */
 function setScreen() {
   navigator.mediaDevices.getDisplayMedia().then(stream => {
-    for (let socket_id in peers) {
-      for (let index in peers[socket_id].streams[0].getTracks()) {
+    for (let socket_id in rooms[key]) {
+      for (let index in rooms[key][socket_id].streams[0].getTracks()) {
         for (let index2 in stream.getTracks()) {
-          if (peers[socket_id].streams[0].getTracks()[index].kind === stream.getTracks()[index2].kind) {
-            peers[socket_id].replaceTrack(peers[socket_id].streams[0].getTracks()[index], stream.getTracks()[index2], peers[socket_id].streams[0])
+          if (rooms[key][socket_id].streams[0].getTracks()[index].kind === stream.getTracks()[index2].kind) {
+            rooms[key][socket_id].replaceTrack(rooms[key][socket_id].streams[0].getTracks()[index], stream.getTracks()[index2], rooms[key][socket_id].streams[0])
             break;
           }
         }
