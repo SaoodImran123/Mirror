@@ -5,7 +5,7 @@
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const userName = urlParams.get('userName')
-document.getElementById('userName').innerHTML=userName
+document.getElementById('userName').innerHTML = userName
 
 /**
  * Socket.io socket
@@ -49,7 +49,10 @@ navigator.mediaDevices.enumerateDevices()
     const cams = devices.filter(device => device.kind == "videoinput");
     const mics = devices.filter(device => device.kind == "audioinput");
 
-    const constraints = { video: cams.length > 0, audio: mics.length > 0 };
+    const constraints = {
+      video: cams.length > 0,
+      audio: mics.length > 0
+    };
     return navigator.mediaDevices.getUserMedia(constraints);
   })
   .then(stream => {
@@ -80,10 +83,10 @@ function init() {
     key = data.newKey;
     document.getElementById("roomKey").textContent = key;
     rooms[key] = {};
-    if(!data.leaving){
+    if (!data.leaving) {
       delete rooms[data.oldKey];
-    }else{
-      if (Object.keys(rooms[data.oldKey]).length == 0){
+    } else {
+      if (Object.keys(rooms[data.oldKey]).length == 0) {
         delete rooms[data.oldKey];
       }
     }
@@ -120,10 +123,10 @@ function init() {
   // Yale
   document.getElementById("chat_send_btn").onclick = () => {
     sendChat();
-    
+
   }
 
-  document.getElementById("call").onclick = () =>{
+  document.getElementById("call").onclick = () => {
     connectToRoom();
   }
 
@@ -141,6 +144,7 @@ function connectToRoom() {
     oldKey: oldKey
   });
 }
+
 function disconnectCall() {
   socket.emit('disconnectCall', key);
   socket.emit('disconnect', key);
@@ -163,6 +167,7 @@ function removePeer(socket_id) {
 
     videoEl.srcObject = null
     videoEl.parentNode.removeChild(videoEl)
+    Video();
   }
   if (rooms[key][socket_id]) rooms[key][socket_id].destroy()
   delete rooms[key][socket_id]
@@ -200,6 +205,7 @@ function addPeer(socket_id, am_initiator) {
     newVid.onclick = () => openPictureMode(newVid)
     newVid.ontouchstart = (e) => openPictureMode(newVid)
     videos.appendChild(newVid)
+    Video();
   })
 
   rooms[key][socket_id].on('data', data => {
@@ -270,12 +276,26 @@ function setScreen() {
       }
 
     }
-    localStream = stream
 
-    localVideo.srcObject = localStream
+    //localStream = stream
+    //localVideo.srcObject = localStream
+
+    let newVid = document.createElement('video')
+    newVid.srcObject = stream
+    newVid.playsinline = false
+    newVid.autoplay = true
+    newVid.className = "vid"
+    newVid.className = 'Screen';
+    newVid.onclick = () => openPictureMode(newVid)
+    newVid.ontouchstart = (e) => openPictureMode(newVid)
+    videos.appendChild(newVid)
+
+    Video();
+
+    // TODO: Disable screen share
+
     socket.emit('removeUpdatePeer', '')
   })
-  updateButtons()
 }
 
 
@@ -303,8 +323,15 @@ function removeLocalStream() {
  */
 function toggleMute() {
   for (let index in localStream.getAudioTracks()) {
-    localStream.getAudioTracks()[index].enabled = !localStream.getAudioTracks()[index].enabled
-    muteButton.innerText = localStream.getAudioTracks()[index].enabled ? "Unmuted" : "Muted"
+    localStream.getAudioTracks()[index].enabled = !localStream.getAudioTracks()[index].enabled;
+    var icon = muteButton.getElementsByTagName("i")[0];
+    if(localStream.getAudioTracks()[index].enabled){
+      icon.className = "fas fa-microphone";
+      muteButton.className = "unmuted";
+    }else{
+      muteButton.className = "muted";
+      icon.className = "fas fa-microphone-slash";
+    }
   }
 }
 /**
@@ -313,19 +340,12 @@ function toggleMute() {
 function toggleVid() {
   for (let index in localStream.getVideoTracks()) {
     localStream.getVideoTracks()[index].enabled = !localStream.getVideoTracks()[index].enabled
-    vidButton.innerText = localStream.getVideoTracks()[index].enabled ? "Video Enabled" : "Video Disabled"
-  }
-}
-
-/**
- * updating text of buttons
- */
-function updateButtons() {
-  for (let index in localStream.getVideoTracks()) {
-    vidButton.innerText = localStream.getVideoTracks()[index].enabled ? "Video Enabled" : "Video Disabled"
-  }
-  for (let index in localStream.getAudioTracks()) {
-    muteButton.innerText = localStream.getAudioTracks()[index].enabled ? "Unmuted" : "Muted"
+    var icon = vidButton.getElementsByTagName("i")[0];
+    if(localStream.getVideoTracks()[index].enabled){
+      icon.className = "fas fa-video";
+    }else{
+      icon.className = "fas fa-video-slash";
+    }
   }
 }
 
@@ -342,17 +362,92 @@ function sendChat() {
   text.value = "";
 }
 
-function displayMsg(user, msg){
+function displayMsg(user, msg) {
   var newMsg = document.createElement("p");
   newMsg.innerHTML = user + ": " + msg;
   document.getElementById('chatbox').appendChild(newMsg);
 }
 
 // Auto increase height of chat text area
-function auto_height(elem) {  /* javascript */
+function auto_height(elem) {
+  /* javascript */
   var container = document.getElementById("chat_input_container");
   elem.style.height = "25px";
-  container.style.height = (elem.scrollHeight)+"px";
-  elem.style.height = (elem.scrollHeight)+"px";
-  
+  container.style.height = (elem.scrollHeight) + "px";
+  elem.style.height = (elem.scrollHeight) + "px";
+
+}
+
+// Video Resize functions
+// Area:
+function Area(Increment, Count, Width, Height, Margin = 10) {
+  let i = w = 0;
+  let h = Increment * 0.75 + (Margin * 2);
+  while (i < (Count)) {
+    if ((w + Increment) > Width) {
+      w = 0;
+      h = h + (Increment * 0.75) + (Margin * 2);
+    }
+    w = w + Increment + (Margin * 2);
+    i++;
+  }
+  if (h > Height || Increment > Width) return false;
+  else return Increment;
+}
+
+function Video() {
+
+  // variables:
+  let Margin = 2;
+  let Scenary = document.getElementById('videos');
+  let Width = Scenary.offsetWidth - (Margin * 2);
+  let Height = Scenary.offsetHeight - (Margin * 2);
+  let Cameras = document.getElementsByTagName('video');
+  let max = 0;
+
+  // loop (i recommend you optimize this)
+  let i = 1;
+  while (i < 5000) {
+    let w = Area(i, Cameras.length, Width, Height, Margin);
+    if (w === false) {
+      max = i - 1;
+      break;
+    }
+    i++;
+  }
+
+  // set styles
+  max = max - (Margin * 2);
+  setWidth(max, Margin);
+}
+
+// Set Width and Margin 
+function setWidth(width, margin) {
+  let Cameras = document.getElementsByTagName('video');
+  for (var s = 0; s < Cameras.length; s++) {
+    Cameras[s].style.width = width + "px";
+    Cameras[s].style.margin = margin + "px";
+    Cameras[s].style.height = (width * 0.75) + "px";
+  }
+}
+
+// Load and Resize Event
+window.addEventListener("load", function (event) {
+  Video();
+  window.onresize = Video;
+}, false);
+
+// Function to add Camera
+function share() {
+  let screens = document.getElementsByClassName('Screen');
+  if (screens.length == 0) {
+    let Screen = document.createElement('div');
+    Screen.className = 'Screen';
+    document.body.appendChild(Screen);
+    document.body.classList.add('sharing');
+  } else {
+    document.body.removeChild(screens[0]);
+    document.body.classList.remove('sharing');
+  }
+  Dish();
 }

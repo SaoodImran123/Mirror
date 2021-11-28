@@ -3,27 +3,33 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="#">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/styles.css">
     <title>Mirror</title>
 </head>
 
 <body>
     <div class="row">
+        <div id="web_title">
+            Mirror
+        </div>
         <div class="column left">
-            <div id="web_title">
-                Mirror
-            </div>
             Name: <span id="userName"> </span>
             <div id="videos" class="container">
                 <video id="localVideo" class="vid" autoplay muted></video>
             </div>
 
-            <div style="display:block">
-                <button id="switchButton" class="settings" onclick="setScreen()">Screen Share</button>
-                <button id="muteButton" class="settings" onclick="toggleMute()">Unmuted</button>
-                <button id="vidButton" class="settings" onclick="toggleVid()">Video Enabled</button>
-                <button id="disconnectButton" class="settings" onclick="disconnectCall()">Disconnect</button>
+            <div class="controls">
+                <button id="switchButton" class="settings" onclick="setScreen()"><i
+                        class="fas fa-share-square"></i></button>
+                <button id="muteButton" class="settings unmuted" onclick="toggleMute()"><i
+                        class="fas fa-microphone"></i></button>
+                <button id="vidButton" class="settings" onclick="toggleVid()"><i class="fas fa-video"></i></button>
+                <button id="disconnectButton" class="settings" onclick="disconnectCall()"><i
+                        class="fas fa-phone-slash"></i></button>
             </div>
         </div>
         <div class="column right">
@@ -37,13 +43,14 @@
                 <div id="wrapper">
                     <div id="chatbox"></div>
                     <div id="chat_input_container">
-                        <textarea rows="1" maxlength ="300"class="auto_height" id="chat_text_field" oninput="auto_height(this)"></textarea>
+                        <textarea rows="1" maxlength="300" class="auto_height" id="chat_text_field"
+                            oninput="auto_height(this)"></textarea>
                         <button id="chat_send_btn">SEND</button>
                     </div>
                 </div>
             </div>
-                <input type="text" id="key" placeholder="Enter key" />
-                <button id="call">Call</button>
+            <input type="text" id="key" placeholder="Enter key" />
+            <button id="call">Call</button>
         </div>
     </div>
 

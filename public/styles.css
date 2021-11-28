@@ -2,8 +2,15 @@
     box-sizing: border-box;
 }
 
+body,
+html {
+    margin: 0;
+    padding: 0;
+}
+
 .column {
     float: left;
+    margin-top: 30px;
 }
 
 .left {
@@ -19,6 +26,125 @@
     display: table;
     clear: both;
 }
+
+/* Video display */
+/* Container */
+#videos {
+    height: 75vh;
+    width: 100%;
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+
+}
+
+/* Camera */
+video{
+    position: relative;
+    vertical-align: middle;
+    align-self: center;
+    border-radius: 10px;
+    overflow: hidden;
+    display: inline-block;
+    box-shadow: 0px 12px 22px rgba(0, 0, 0, 0.4);
+    background: #fff;
+    animation: show 0.4s ease;
+}
+
+/* Details (optional) */
+/* Aspect Ratio Number */
+video:after {
+    color: #aaa;
+    font-size: 13px;
+    font-family: Arial, Helvetica, sans-serif;
+    position: absolute;
+    font-weight: 100;
+    content: "4:3";
+    display: block;
+}
+
+/* Gray Diagonal */
+video:before {
+    height: 1px;
+    background: #ddd;
+    width: 100%;
+    transform: rotate(-37deg);
+    font-weight: 100;
+    content: "4:3";
+    display: block;
+}
+
+/* Share Screen */
+/* Screen */
+.Screen {
+    background: #000;
+    border-radius: 10px;
+    z-index: -1;
+}
+
+/* Move Dish */
+.sharing #videos {
+    width: 400px;
+    right: 10px;
+}
+
+/* Share box */
+.share:before,
+.share:after{
+    width: 20px;
+    margin-left: 0px;
+}
+.share:before {
+    transform:rotate(45deg);
+    margin-left: -2px;
+}
+.share:after {
+    margin-left: -15px;
+    transform: rotate(-45deg);
+}
+
+/* Animation */
+@keyframes show {
+    0% {
+        opacity: 0;
+        transform: scale(0.4) translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Video Controls*/
+.controls{
+    margin: auto;
+    margin-top: 70px;
+    width: 20%;
+    background-color: white;
+    padding: 10px;
+    text-align: center;
+}
+.controls button{
+    background-color: DodgerBlue;
+    border: none;
+    color: white;
+    padding: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+
+  .controls .unmuted{
+    padding: 20px 24px;
+  }
+
+  .controls .muted{
+    padding: 20px;
+  }
 
 /* Chatbot */
 #chat {
@@ -68,15 +194,15 @@
     resize: none;
     padding: 0;
     font-size: 18px;
-  }
+}
 
 .auto_height:focus {
     /* removing the input focus blue box. */
     outline: none;
 }
+
 .auto_height::-webkit-scrollbar {
     display: none;
-  }
-
-#chat_send_btn {
 }
+
+#chat_send_btn {}
