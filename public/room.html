@@ -4,38 +4,49 @@
 <head>
     <meta charset="utf-8">
     <link rel="shortcut icon" href="#">
-    <title>Video calling</title>
+    <link rel="stylesheet" href="/styles.css">
+    <title>Mirror</title>
 </head>
 
 <body>
-    <div class="container">
-        Name: <div id="userName"> </div>
-        Room Key: <div id="roomKey"></div>
-        <div id="videos" class="container">
-            <video id="localVideo" class="vid" autoplay muted></video>
-        </div>
+    <div class="row">
+        <div class="column left">
+            <div id="web_title">
+                Mirror
+            </div>
+            Name: <span id="userName"> </span>
+            <div id="videos" class="container">
+                <video id="localVideo" class="vid" autoplay muted></video>
+            </div>
 
-        <div id="usersList">
-            No users connected
+            <div style="display:block">
+                <button id="switchButton" class="settings" onclick="setScreen()">Screen Share</button>
+                <button id="muteButton" class="settings" onclick="toggleMute()">Unmuted</button>
+                <button id="vidButton" class="settings" onclick="toggleVid()">Video Enabled</button>
+                <button id="disconnectButton" class="settings" onclick="disconnectCall()">Disconnect</button>
+            </div>
         </div>
-        <input type="text" id="key" placeholder="Enter key"/>
-        <button id="call">Call</button>
-        <div style="display:block">
-            <button id="switchButton" class="settings" onclick="setScreen()">Screen Share</button>
-            <button id="muteButton" class="settings" onclick="toggleMute()">Unmuted</button>
-            <button id="vidButton" class="settings" onclick="toggleVid()">Video Enabled</button>
-            <button id="disconnectButton" class="settings" onclick="disconnectCall()">Disconnect</button>
+        <div class="column right">
+            <div>
+                Room Key: <span id="roomKey"></span>
+            </div>
+            <div id="chat">
+                <div class="chatbox_top">
+                    <p>Chat</p>
+                </div>
+                <div id="wrapper">
+                    <div id="chatbox"></div>
+                    <div id="chat_input_container">
+                        <textarea rows="1" maxlength ="300"class="auto_height" id="chat_text_field" oninput="auto_height(this)"></textarea>
+                        <button id="chat_send_btn">SEND</button>
+                    </div>
+                </div>
+            </div>
+                <input type="text" id="key" placeholder="Enter key" />
+                <button id="call">Call</button>
         </div>
     </div>
 
-    <div id="chat">
-        <p>Chat</p>
-        <div id="wrapper"> 
-            <div id="chatbox"></div>
-            <input type="text" id="chat_text_field">
-            <button id="chat_send_btn">SEND</button>
-        </div>
-    </div>
     <script lang="text/javascript" src="/socket.io/socket.io.js"></script>
     <script src="/simple-peer/simplepeer.min.js"></script>
     <script src="index.js"></script>

@@ -339,10 +339,20 @@ function sendChat() {
   for (let socket_id in rooms[key]) {
     rooms[key][socket_id].send(text.value);
   }
+  text.value = "";
 }
 
 function displayMsg(user, msg){
   var newMsg = document.createElement("p");
   newMsg.innerHTML = user + ": " + msg;
   document.getElementById('chatbox').appendChild(newMsg);
+}
+
+// Auto increase height of chat text area
+function auto_height(elem) {  /* javascript */
+  var container = document.getElementById("chat_input_container");
+  elem.style.height = "25px";
+  container.style.height = (elem.scrollHeight)+"px";
+  elem.style.height = (elem.scrollHeight)+"px";
+  
 }
