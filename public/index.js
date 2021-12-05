@@ -264,6 +264,29 @@ function switchMedia() {
  * Enable screen share
  */
 function setScreen() {
+  const screenShareDomID = 'localScreenShare'
+
+  //Disable screen share if localScreenShare dom element exists
+  if (document.contains(document.getElementById('localScreenShare'))){
+    //Replace an existing screen share track
+    for (let peer in rooms[key]){
+      for (let remoteTrack in rooms[key][peer].streams[0].getTracks()){
+          for (let localTrack in localStream.getTracks()){
+            if (rooms[key][peer].streams[0].getTracks()[remoteTrack].kind === localStream.getTracks()[localTrack].kind){
+              console.log("Replacing screenshare track with video track")
+              rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[remoteTrack], localStream.getTracks()[localTrack], rooms[key][peer].streams[0])
+            }
+          }
+      }
+    }
+
+    //Remove screen share dom element
+    document.getElementById(screenShareDomID).remove();
+
+    return;
+  }
+
+
   navigator.mediaDevices.getDisplayMedia().then(stream => {
 
     //Replace an existing screen share track
@@ -272,7 +295,7 @@ function setScreen() {
           console.log("Track found")
           for (let localTrack in stream.getTracks()){
             if (rooms[key][peer].streams[0].getTracks()[track].kind === stream.getTracks()[localTrack].kind){
-              console.log("Replacing video track")
+              console.log("Replacing with screenshare track")
               rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[track], stream.getTracks()[localTrack], rooms[key][peer].streams[0])
             }
           }
@@ -282,8 +305,8 @@ function setScreen() {
 
     //Check if dom element exists for local screen share, if it exists replace it, otherwise create a new one.
     let newVid
-    if (document.contains(document.getElementById('localScreenShare'))){
-      newVid = document.getElementById('localScreenShare')
+    if (document.contains(document.getElementById(screenShareDomID))){
+      newVid = document.getElementById(screenShareDomID)
     } else {
       newVid = document.createElement('video')
     }
@@ -295,12 +318,14 @@ function setScreen() {
     newVid.className = 'Screen'
     newVid.onclick = () => openPictureMode(newVid)
     newVid.ontouchstart = (e) => openPictureMode(newVid)
-    newVid.id = "localScreenShare"
+    newVid.id = screenShareDomID
     videos.appendChild(newVid)
 
     Video();
 
-    // TODO: Disable screen share
+    // TODO: add cross through video button
+
+
 
     socket.emit('removeUpdatePeer', '')
   })
