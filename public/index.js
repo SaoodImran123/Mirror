@@ -265,29 +265,37 @@ function switchMedia() {
  */
 function setScreen() {
   navigator.mediaDevices.getDisplayMedia().then(stream => {
-    for (let socket_id in rooms[key]) {
-      for (let index in rooms[key][socket_id].streams[0].getTracks()) {
-        for (let index2 in stream.getTracks()) {
-          if (rooms[key][socket_id].streams[0].getTracks()[index].kind === stream.getTracks()[index2].kind) {
-            rooms[key][socket_id].replaceTrack(rooms[key][socket_id].streams[0].getTracks()[index], stream.getTracks()[index2], rooms[key][socket_id].streams[0])
-            break;
-          }
-        }
-      }
 
+    //Replace an existing screen share track
+    for (let peer in rooms[key]){
+      for (let track in rooms[key][peer].streams[0].getTracks()){
+          console.log("Track found")
+          for (let localTrack in stream.getTracks()){
+            if (rooms[key][peer].streams[0].getTracks()[track].kind === stream.getTracks()[localTrack].kind){
+              console.log("Replacing video track")
+              rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[track], stream.getTracks()[localTrack], rooms[key][peer].streams[0])
+            }
+          }
+      }
     }
 
-    //localStream = stream
-    //localVideo.srcObject = localStream
 
-    let newVid = document.createElement('video')
+    //Check if dom element exists for local screen share, if it exists replace it, otherwise create a new one.
+    let newVid
+    if (document.contains(document.getElementById('localScreenShare'))){
+      newVid = document.getElementById('localScreenShare')
+    } else {
+      newVid = document.createElement('video')
+    }
+
     newVid.srcObject = stream
     newVid.playsinline = false
     newVid.autoplay = true
     newVid.className = "vid"
-    newVid.className = 'Screen';
+    newVid.className = 'Screen'
     newVid.onclick = () => openPictureMode(newVid)
     newVid.ontouchstart = (e) => openPictureMode(newVid)
+    newVid.id = "localScreenShare"
     videos.appendChild(newVid)
 
     Video();
