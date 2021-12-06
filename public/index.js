@@ -265,6 +265,7 @@ function switchMedia() {
  */
 function setScreen() {
   const screenShareDomID = 'localScreenShare'
+  var icon = shareButton.getElementsByTagName("i")[0];
 
   //Disable screen share if localScreenShare dom element exists
   if (document.contains(document.getElementById('localScreenShare'))){
@@ -282,10 +283,10 @@ function setScreen() {
 
     //Remove screen share dom element
     document.getElementById(screenShareDomID).remove();
+    icon.className = "fas fa-share-square";
 
     return;
   }
-
 
   navigator.mediaDevices.getDisplayMedia().then(stream => {
 
@@ -296,7 +297,7 @@ function setScreen() {
           for (let localTrack in stream.getTracks()){
             if (rooms[key][peer].streams[0].getTracks()[track].kind === stream.getTracks()[localTrack].kind){
               console.log("Replacing with screenshare track")
-              rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[track], stream.getTracks()[localTrack], rooms[key][peer].streams[0])
+              rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[track], stream.getTracks()[localTrack], rooms[key][peer].streams[0]);
             }
           }
       }
@@ -320,13 +321,10 @@ function setScreen() {
     newVid.ontouchstart = (e) => openPictureMode(newVid)
     newVid.id = screenShareDomID
     videos.appendChild(newVid)
+    icon.className = "fas fa-window-close";
 
     Video();
-
-    // TODO: add cross through video button
-
-
-
+    
     socket.emit('removeUpdatePeer', '')
   })
 }
