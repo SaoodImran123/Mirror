@@ -46,8 +46,35 @@ html {
 }
 
 #username_container{
-    margin-right: 50px;
+    margin-right: 10px;
 }
+
+#userName{
+    padding: 5px;
+    border: 2px solid black;
+    font-size: 16px;
+    width: 100px;
+}
+
+#userName.read-only{
+    outline: none;
+    border: none;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+#edit_user{
+    background-color: dodgerblue;
+    border: none;
+    color: white;
+    height: 35px;
+    width: 40px;
+}
+
+#edit_user.hidden{
+    display: none;
+}
+
 
 /* Video display */
 
@@ -101,35 +128,6 @@ video:before {
     font-weight: 100;
     content: "4:3";
     display: block;
-}
-
-/* Share Screen */
-/* Screen */
-.Screen {
-    background: #000;
-    border-radius: 10px;
-    z-index: -1;
-}
-
-/* Move Dish */
-.sharing #videos {
-    width: 400px;
-    right: 10px;
-}
-
-/* Share box */
-.share:before,
-.share:after{
-    width: 20px;
-    margin-left: 0px;
-}
-.share:before {
-    transform:rotate(45deg);
-    margin-left: -2px;
-}
-.share:after {
-    margin-left: -15px;
-    transform: rotate(-45deg);
 }
 
 /* Animation */
