@@ -1,47 +1,73 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <link rel="shortcut icon" href="#">
-  <title>Video calling</title>
-</head>
-<body>
-<div class="container">
-  <form action="/createRoom" method="POST">
-    <label>Name: </label>
-    <input type="text" name="userName" id="userName" placeholder="John Doe..."/>
-    <input type="submit">Create Room!</button>
-  </form>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
-<script src="index.js"></script>
-</body>
-</html>
-<style scoped>
-  .container{
-    display: inline-block;
-    border: 1px solid;
-    border-color: black;
-    height: 200px;
-    width: 300px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -100px 0 0 -150px;
-    padding: 20px;
-  }
-  input{
-    display: table-cell; margin-left: 5px;margin-top: 10px; margin-bottom: 10px;width: 60%;
-  }
-  label {display: table-cell;}
-  p { display: table-row;}
-  button{
-    margin:0 auto;
-    display: block;
-    position: absolute;
-    right: 35%;
-    bottom: 10%;
-    
-  }
 
-</style>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="#">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/styles.css">
+    <title>Mirror</title>
+</head>
+
+<body>
+    <div class="row">
+        <div id="web_title">
+            Mirror
+        </div>
+        <div class="column left">
+            <div id="key_user_container">
+                <span id="username_container"> 
+                    <label for="userName">Name:</label>
+                    <input type="text" id="userName" placeholder="Enter key" />
+                    <button id="edit_user" class="hidden"><i class="fas fa-user-edit"></i></button>
+                </span>
+                <span id="key_container">
+                    Room Key: <span id="roomKey"></span>
+                </span>
+            </div>
+            <div id="videos" class="container">
+                <video id="localVideo" class="vid" autoplay muted></video>
+            </div>
+
+            <div class="controls">
+                <button id="shareButton" class="settings" onclick="setScreen()"><i
+                        class="fas fa-share-square"></i></button>
+                <button id="muteButton" class="settings unmuted" onclick="toggleMute()"><i
+                        class="fas fa-microphone"></i></button>
+                <button id="vidButton" class="settings" onclick="toggleVid()"><i class="fas fa-video"></i></button>
+                <button id="disconnectButton" class="settings" onclick="disconnectCall()"><i
+                        class="fas fa-phone-slash"></i></button>
+            </div>
+        </div>
+        <div class="column right">
+            <div id="join_container">
+                <label for="key">Join:</label>
+                <input type="text" id="key" placeholder="Enter key" />
+                <button id="call"><i class="fas fa-sign-in-alt"></i></button>
+            </div>
+            
+            <div id="chat">
+                <div class="chatbox_top">
+                    <p>Chat</p>
+                </div>
+                <div id="wrapper">
+                    <div id="chatbox"></div>
+                    <div id="chat_input_container">
+                        <input type="text" id="chat_text_field" placeholder="Enter message">
+                        <button id="chat_send_btn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="chatbox_bottom">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script lang="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script src="/simple-peer/simplepeer.min.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
