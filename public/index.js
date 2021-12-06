@@ -95,7 +95,6 @@ function init() {
   socket.on('initReceive', socket_id => {
     console.log('INIT RECEIVE ' + socket_id)
     addPeer(socket_id, false);
-
     socket.emit('initSend', socket_id)
   })
 
@@ -119,10 +118,15 @@ function init() {
   socket.on('signal', data => {
     rooms[key][data.socket_id].signal(data.signal)
   })
+  socket.on('errorHandler', data =>{
+    errorHandler(data)
+  })
 
-  // Send message event listeners
+
+// Send message event listeners
   document.getElementById("chat_send_btn").onclick = () => {
     sendChat();
+
   }
   var msgField = document.getElementById("chat_text_field");
   msgField.addEventListener("keydown", function(event) {
@@ -131,7 +135,7 @@ function init() {
       }
   });
 
-  // Join call event listener
+// Join call event listener
   document.getElementById("call").onclick = () => {
     connectToRoom();
   }
@@ -143,6 +147,11 @@ function init() {
       }
   });
 
+
+
+
+
+
 }
 
 /**
@@ -150,12 +159,20 @@ function init() {
  * @param {String} socket_id 
  */
 function connectToRoom() {
-  var oldKey = document.getElementById("roomKey").value;
+  var oldKey = document.getElementById("roomKey").textContent;
   var roomKey = document.getElementById("key").value;
+  if (oldKey != roomKey){
+    disconnectCall()
+    console.log("Room joined")
     socket.emit('connectToRoom', {
       targetRoom: roomKey,
       oldKey: oldKey
     });
+  }
+  else{
+    console.log("Error sent")
+    errorHandler(0)
+  }
 }
 
 function disconnectCall() {
@@ -272,13 +289,19 @@ function switchMedia() {
   })
 }
 
+function errorHandler(errorCode){
+  if(errorCode == 0){
+    window.alert("You are already in this room.")
+  }
+}
+
+
 /**
  * Enable screen share
  */
 function setScreen() {
   const screenShareDomID = 'localScreenShare'
   var icon = shareButton.getElementsByTagName("i")[0];
-
   //Disable screen share if localScreenShare dom element exists
   if (document.contains(document.getElementById('localScreenShare'))){
     //Replace an existing screen share track
@@ -301,7 +324,6 @@ function setScreen() {
   }
 
   navigator.mediaDevices.getDisplayMedia().then(stream => {
-
     //Replace an existing screen share track
     for (let peer in rooms[key]){
       for (let track in rooms[key][peer].streams[0].getTracks()){
@@ -336,7 +358,7 @@ function setScreen() {
     icon.className = "fas fa-window-close";
 
     Video();
-
+    
     socket.emit('removeUpdatePeer', '')
   })
 }
