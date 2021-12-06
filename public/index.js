@@ -15,6 +15,7 @@ let socket;
  * The stream object used to send media
  */
 let localStream = null;
+let webCamStream = null;
 /**
  * All peer connections
  */
@@ -59,6 +60,7 @@ navigator.mediaDevices.enumerateDevices()
     console.log('Received local stream');
     localVideo.srcObject = stream;
     localStream = stream;
+    webCamStream = stream;
 
     init();
   }).catch();
@@ -307,14 +309,15 @@ function setScreen() {
     //Replace an existing screen share track
     for (let peer in rooms[key]){
       for (let remoteTrack in rooms[key][peer].streams[0].getTracks()){
-          for (let localTrack in localStream.getTracks()){
-            if (rooms[key][peer].streams[0].getTracks()[remoteTrack].kind === localStream.getTracks()[localTrack].kind){
+          for (let localTrack in webCamStream.getTracks()){
+            if (rooms[key][peer].streams[0].getTracks()[remoteTrack].kind === webCamStream.getTracks()[localTrack].kind){
               console.log("Replacing screenshare track with video track")
-              rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[remoteTrack], localStream.getTracks()[localTrack], rooms[key][peer].streams[0])
+              rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[remoteTrack], webCamStream.getTracks()[localTrack], rooms[key][peer].streams[0])
             }
           }
       }
     }
+    localStream = webCamStream;
 
     //Remove screen share dom element
     document.getElementById(screenShareDomID).remove();
@@ -336,6 +339,7 @@ function setScreen() {
           }
       }
     }
+    localStream = stream;
 
 
     //Check if dom element exists for local screen share, if it exists replace it, otherwise create a new one.
