@@ -354,7 +354,6 @@ function setScreen() {
     newVid.playsinline = false
     newVid.autoplay = true
     newVid.className = "vid"
-    newVid.className = 'Screen'
     newVid.onclick = () => openPictureMode(newVid)
     newVid.ontouchstart = (e) => openPictureMode(newVid)
     newVid.id = screenShareDomID
