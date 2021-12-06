@@ -17,7 +17,14 @@
             Mirror
         </div>
         <div class="column left">
-            Name: <span id="userName"> </span>
+            <div id="key_user_container">
+                <span id="username_container"> 
+                    Name: <span id="userName"> </span>
+                </span>
+                <span id="key_container">
+                    Room Key: <span id="roomKey"></span>
+                </span>
+            </div>
             <div id="videos" class="container">
                 <video id="localVideo" class="vid" autoplay muted></video>
             </div>
@@ -33,9 +40,12 @@
             </div>
         </div>
         <div class="column right">
-            <div>
-                Room Key: <span id="roomKey"></span>
+            <div id="join_container">
+                <label for="key">Join:</label>
+                <input type="text" id="key" placeholder="Enter key" />
+                <button id="call"><i class="fas fa-sign-in-alt"></i></button>
             </div>
+            
             <div id="chat">
                 <div class="chatbox_top">
                     <p>Chat</p>
@@ -43,14 +53,13 @@
                 <div id="wrapper">
                     <div id="chatbox"></div>
                     <div id="chat_input_container">
-                        <textarea rows="1" maxlength="300" class="auto_height" id="chat_text_field"
-                            oninput="auto_height(this)"></textarea>
-                        <button id="chat_send_btn">SEND</button>
+                        <input type="text" id="chat_text_field" placeholder="Enter message">
+                        <button id="chat_send_btn"><i class="fas fa-chevron-right"></i></button>
                     </div>
                 </div>
+                <div class="chatbox_bottom">
+                </div>
             </div>
-            <input type="text" id="key" placeholder="Enter key" />
-            <button id="call">Call</button>
         </div>
     </div>
 

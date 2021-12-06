@@ -120,15 +120,28 @@ function init() {
     rooms[key][data.socket_id].signal(data.signal)
   })
 
-  // Yale
+  // Send message event listeners
   document.getElementById("chat_send_btn").onclick = () => {
     sendChat();
-
   }
+  var msgField = document.getElementById("chat_text_field");
+  msgField.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        sendChat();
+      }
+  });
 
+  // Join call event listener
   document.getElementById("call").onclick = () => {
     connectToRoom();
   }
+
+  var joinField = document.getElementById("key");
+  joinField.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        connectToRoom();
+      }
+  });
 
 }
 
@@ -139,10 +152,10 @@ function init() {
 function connectToRoom() {
   var oldKey = document.getElementById("roomKey").value;
   var roomKey = document.getElementById("key").value;
-  socket.emit('connectToRoom', {
-    targetRoom: roomKey,
-    oldKey: oldKey
-  });
+    socket.emit('connectToRoom', {
+      targetRoom: roomKey,
+      oldKey: oldKey
+    });
 }
 
 function disconnectCall() {
@@ -256,7 +269,6 @@ function switchMedia() {
     localStream = stream
     localVideo.srcObject = stream
 
-    updateButtons()
   })
 }
 
@@ -324,7 +336,7 @@ function setScreen() {
     icon.className = "fas fa-window-close";
 
     Video();
-    
+
     socket.emit('removeUpdatePeer', '')
   })
 }
@@ -386,28 +398,20 @@ function toggleVid() {
 function sendChat() {
   var text = document.getElementById("chat_text_field");
   console.log("sent: " + text.value);
-  displayMsg(document.getElementById('userName').innerHTML, text.value)
+  var sent= document.getElementById('userName').textContent + ": " + text.value
+  displayMsg(document.getElementById('userName').textContent, sent)
   for (let socket_id in rooms[key]) {
-    rooms[key][socket_id].send(text.value);
+    rooms[key][socket_id].send(sent);
   }
   text.value = "";
 }
 
 function displayMsg(user, msg) {
   var newMsg = document.createElement("p");
-  newMsg.innerHTML = user + ": " + msg;
+  newMsg.textContent =  msg;
   document.getElementById('chatbox').appendChild(newMsg);
 }
 
-// Auto increase height of chat text area
-function auto_height(elem) {
-  /* javascript */
-  var container = document.getElementById("chat_input_container");
-  elem.style.height = "25px";
-  container.style.height = (elem.scrollHeight) + "px";
-  elem.style.height = (elem.scrollHeight) + "px";
-
-}
 
 // Video Resize functions
 // Area:
@@ -448,7 +452,7 @@ function Video() {
   }
 
   // set styles
-  max = max - (Margin * 2);
+  max = max - (Margin * 2) - 50;
   setWidth(max, Margin);
 }
 

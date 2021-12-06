@@ -1,5 +1,6 @@
 * {
     box-sizing: border-box;
+    font-family: Segoe UI;
 }
 
 body,
@@ -10,7 +11,6 @@ html {
 
 .column {
     float: left;
-    margin-top: 30px;
 }
 
 .left {
@@ -27,18 +27,44 @@ html {
     clear: both;
 }
 
+#web_title{
+    margin-left: 40px;
+    margin-top: 20px;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+#key_user_container{
+    float: right;
+    margin-right: 70px;
+    margin-bottom: 5px;
+}
+
+#key_user_container span{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#username_container{
+    margin-right: 50px;
+}
+
 /* Video display */
+
 /* Container */
 #videos {
     height: 75vh;
-    width: 100%;
+    width: 95%;
     display: flex;
     align-content: center;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     vertical-align: middle;
-
+    background-color: #C2DFE3;
+    border-radius: 40px;
+    margin-left: 50px;
+    padding: 10px;
 }
 
 /* Camera */
@@ -122,11 +148,14 @@ video:before {
 /* Video Controls*/
 .controls{
     margin: auto;
-    margin-top: 70px;
-    width: 20%;
+    margin-top: 15px;
+    width: 95%;
     background-color: white;
     padding: 10px;
     text-align: center;
+    background-color: #C2DFE3;
+    border-radius: 20px;
+    margin-left: 50px;
 }
 .controls button{
     background-color: DodgerBlue;
@@ -147,6 +176,34 @@ video:before {
   }
 
 /* Chatbot */
+#join_container{
+    margin-bottom: 5px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+#join_container label{
+    font-size: 20px;
+    font-weight: bold;
+    margin-right: 5px;
+}
+#key{
+    padding: 5px;
+    border: 2px solid black;
+    font-size: 16px;
+}
+
+#join_container button{
+    background-color: dodgerblue;
+    border: none;
+    color: white;
+    height: 35px;
+    width: 40px;
+}
+
+#join_container i{
+    font-size: 20px;
+}
+
 #chat {
     height: 75vh;
     margin-right: 20px;
@@ -154,8 +211,9 @@ video:before {
 
 .chatbox_top {
     height: 30px;
-    border: 1px solid black;
-
+    padding: 1px;
+    border-radius: 20px 20px 0 0;
+    background-color: #C2DFE3;
 }
 
 .chatbox_top>p {
@@ -163,6 +221,7 @@ video:before {
     text-align: center;
     margin-top: 5px;
     margin-bottom: 5px;
+    font-weight: bold;
 }
 
 #wrapper {
@@ -172,37 +231,54 @@ video:before {
 #chatbox {
     width: 100%;
     height: 100%;
-    border: 1px solid black;
+    background-color: #E1EFF1;
+}
+
+#chatbox p{
+    margin: 0;
+    padding-left: 10px;
+    padding-top: 5px;
+    font-size: 17px;
 }
 
 
 #chat_input_container {
     display: flex;
     flex-direction: row;
-    border: 1px solid black;
     height: 30px;
+    background-color: #E1EFF1;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 #chat input {
     flex-grow: 2;
     border: none;
+    height: 40px;
     width: calc(100% - 58px);
+    padding: 5px;
+    font-size: 16px;
 }
 
-.auto_height {
-    width: 100%;
-    resize: none;
-    padding: 0;
-    font-size: 18px;
-}
-
-.auto_height:focus {
-    /* removing the input focus blue box. */
+#chat input:focus {
     outline: none;
+  }
+
+
+.chatbox_bottom {
+    height: 55px;
+    padding: 1px;
+    border-radius: 0 0 20px 20px;
+    background-color: #E1EFF1;
 }
 
-.auto_height::-webkit-scrollbar {
-    display: none;
+#chat_send_btn {
+    background-color: white;
+    height: 40px;
+    border: none;
 }
 
-#chat_send_btn {}
+#chat_send_btn i{
+    font-size: 16px;
+    padding-top: 2px;
+}
