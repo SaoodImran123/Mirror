@@ -1,4 +1,13 @@
 /**
+ * Get name from Param and assign it to user
+ * TODO: assign name to user
+ */
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const userName = urlParams.get('userName')
+document.getElementById('userName').innerHTML = userName
+
+/**
  * Socket.io socket
  */
 let socket;
@@ -6,7 +15,6 @@ let socket;
  * The stream object used to send media
  */
 let localStream = null;
-let webCamStream = null;
 /**
  * All peer connections
  */
@@ -51,7 +59,6 @@ navigator.mediaDevices.enumerateDevices()
     console.log('Received local stream');
     localVideo.srcObject = stream;
     localStream = stream;
-    webCamStream = stream;
 
     init();
   }).catch();
@@ -103,11 +110,6 @@ function init() {
 
   socket.on('disconnect', () => {
     console.log('GOT DISCONNECTED')
-    // Clear chat box
-    const parent = document.getElementById("chatbox");
-    while (parent.firstChild) {
-      parent.firstChild.remove();
-    }
     for (let socket_id in rooms[key]) {
       removePeer(socket_id)
     }
@@ -116,44 +118,39 @@ function init() {
   socket.on('signal', data => {
     rooms[key][data.socket_id].signal(data.signal)
   })
-  socket.on('errorHandler', data => {
+  socket.on('errorHandler', data =>{
     errorHandler(data)
   })
 
 
-  // Send message event listeners
+// Send message event listeners
   document.getElementById("chat_send_btn").onclick = () => {
     sendChat();
 
   }
   var msgField = document.getElementById("chat_text_field");
-  msgField.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      sendChat();
-    }
+  msgField.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        sendChat();
+      }
   });
 
-  // Join call event listener
+// Join call event listener
   document.getElementById("call").onclick = () => {
     connectToRoom();
   }
 
-  document.getElementById("key").addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      connectToRoom();
-    }
+  var joinField = document.getElementById("key");
+  joinField.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        connectToRoom();
+      }
   });
 
-  // Username event listener
-  document.getElementById("userName").addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      setUsername();
-    }
-  });
 
-  document.getElementById("edit_user").onclick = () => {
-    changeUsername();
-  }
+
+
+
 
 }
 
@@ -164,14 +161,15 @@ function init() {
 function connectToRoom() {
   var oldKey = document.getElementById("roomKey").textContent;
   var roomKey = document.getElementById("key").value;
-  if (roomKey != "" && oldKey != roomKey) {
-    disconnectCall();
+  if (oldKey != roomKey){
+    disconnectCall()
     console.log("Room joined")
     socket.emit('connectToRoom', {
       targetRoom: roomKey,
       oldKey: oldKey
     });
-  } else {
+  }
+  else{
     console.log("Error sent")
     errorHandler(0)
   }
@@ -181,27 +179,6 @@ function disconnectCall() {
   socket.emit('disconnectCall', key);
   socket.emit('disconnect', key);
 }
-
-function setUsername() {
-  var userField = document.getElementById("userName");
-  var userLabel = document.getElementById("user_label");
-  if (userField.value != "") {
-    userField.readOnly = true;
-    userField.className = "hidden"
-    userLabel.textContent = userField.value;
-    userLabel.className = "";
-    document.getElementById("edit_user").className = "";
-  }
-}
-
-function changeUsername() {
-  var userField = document.getElementById("userName");
-  userField.readOnly = false;
-  userField.className = "";
-  document.getElementById("user_label").className = "hidden";
-  document.getElementById("edit_user").className = "hidden";
-}
-
 /**
  * Remove a peer with given socket_id. 
  * Removes the video element and deletes the connection
@@ -312,8 +289,8 @@ function switchMedia() {
   })
 }
 
-function errorHandler(errorCode) {
-  if (errorCode == 0) {
+function errorHandler(errorCode){
+  if(errorCode == 0){
     window.alert("You are already in this room.")
   }
 }
@@ -322,20 +299,20 @@ function errorHandler(errorCode) {
 /**
  * Enable screen share
  */
-function setScreen() {
+ function setScreen() {
   const screenShareDomID = 'localScreenShare'
   var icon = shareButton.getElementsByTagName("i")[0];
   //Disable screen share if localScreenShare dom element exists
-  if (document.contains(document.getElementById('localScreenShare'))) {
+  if (document.contains(document.getElementById('localScreenShare'))){
     //Replace an existing screen share track
-    for (let peer in rooms[key]) {
-      for (let remoteTrack in rooms[key][peer].streams[0].getTracks()) {
-        for (let localTrack in webCamStream.getTracks()) {
-          if (rooms[key][peer].streams[0].getTracks()[remoteTrack].kind === webCamStream.getTracks()[localTrack].kind) {
-            console.log("Replacing screenshare track with video track")
-            rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[remoteTrack], webCamStream.getTracks()[localTrack], rooms[key][peer].streams[0])
+    for (let peer in rooms[key]){
+      for (let remoteTrack in rooms[key][peer].streams[0].getTracks()){
+          for (let localTrack in webCamStream.getTracks()){
+            if (rooms[key][peer].streams[0].getTracks()[remoteTrack].kind === webCamStream.getTracks()[localTrack].kind){
+              console.log("Replacing screenshare track with video track")
+              rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[remoteTrack], webCamStream.getTracks()[localTrack], rooms[key][peer].streams[0])
+            }
           }
-        }
       }
     }
     localStream = webCamStream;
@@ -345,8 +322,8 @@ function setScreen() {
     icon.className = "fas fa-share-square";
 
     return;
+    
   }
-
   navigator.mediaDevices.getDisplayMedia().then(stream => {
     //Replace an existing screen share track
     for (let peer in rooms[key]){
@@ -355,23 +332,17 @@ function setScreen() {
           for (let localTrack in stream.getTracks()){
             if (rooms[key][peer].streams[0].getTracks()[track].kind === stream.getTracks()[localTrack].kind){
               console.log("Replacing with screenshare track")
-              const audio = navigator.mediaDevices.getUserMedia({audio: true});
-              
-              if(audio.length > 0){
-                NewStream = MediaStream([audio.getTracks()[0],stream.getTracks()[0]]);
-                rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[track], NewStream.getTracks()[localTrack], rooms[key][peer].streams[0]);
-              }
+              rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[track], stream.getTracks()[localTrack], rooms[key][peer].streams[0]);
             }
           }
-        }
       }
-    
+    }
     localStream = stream;
 
 
     //Check if dom element exists for local screen share, if it exists replace it, otherwise create a new one.
     let newVid
-    if (document.contains(document.getElementById(screenShareDomID))) {
+    if (document.contains(document.getElementById(screenShareDomID))){
       newVid = document.getElementById(screenShareDomID)
     } else {
       newVid = document.createElement('video')
@@ -388,7 +359,7 @@ function setScreen() {
     icon.className = "fas fa-window-close";
 
     Video();
-
+    
     socket.emit('removeUpdatePeer', '')
   })
 }
@@ -420,10 +391,10 @@ function toggleMute() {
   for (let index in localStream.getAudioTracks()) {
     localStream.getAudioTracks()[index].enabled = !localStream.getAudioTracks()[index].enabled;
     var icon = muteButton.getElementsByTagName("i")[0];
-    if (localStream.getAudioTracks()[index].enabled) {
+    if(localStream.getAudioTracks()[index].enabled){
       icon.className = "fas fa-microphone";
       muteButton.className = "unmuted";
-    } else {
+    }else{
       muteButton.className = "muted";
       icon.className = "fas fa-microphone-slash";
     }
@@ -436,9 +407,9 @@ function toggleVid() {
   for (let index in localStream.getVideoTracks()) {
     localStream.getVideoTracks()[index].enabled = !localStream.getVideoTracks()[index].enabled
     var icon = vidButton.getElementsByTagName("i")[0];
-    if (localStream.getVideoTracks()[index].enabled) {
+    if(localStream.getVideoTracks()[index].enabled){
       icon.className = "fas fa-video";
-    } else {
+    }else{
       icon.className = "fas fa-video-slash";
     }
   }
@@ -450,8 +421,8 @@ function toggleVid() {
 function sendChat() {
   var text = document.getElementById("chat_text_field");
   console.log("sent: " + text.value);
-  var sent = document.getElementById('userName').value + ": " + text.value
-  displayMsg(document.getElementById('userName').value, sent)
+  var sent= document.getElementById('userName').textContent + ": " + text.value
+  displayMsg(document.getElementById('userName').textContent, sent)
   for (let socket_id in rooms[key]) {
     rooms[key][socket_id].send(sent);
   }
@@ -460,7 +431,7 @@ function sendChat() {
 
 function displayMsg(user, msg) {
   var newMsg = document.createElement("p");
-  newMsg.textContent = msg;
+  newMsg.textContent =  msg;
   document.getElementById('chatbox').appendChild(newMsg);
 }
 
