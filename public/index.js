@@ -378,9 +378,10 @@ function errorHandler(errorCode){
       newVid = document.createElement('video')
     }
 
-    newVid.srcObject = stream
+    newVid.srcObject = localStream
     newVid.playsinline = false
     newVid.autoplay = true
+    newVid.muted = true
     newVid.className = "vid"
     newVid.onclick = () => openPictureMode(newVid)
     newVid.ontouchstart = (e) => openPictureMode(newVid)
