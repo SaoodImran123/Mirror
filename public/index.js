@@ -111,6 +111,11 @@ function init() {
 
   socket.on('disconnect', () => {
     console.log('GOT DISCONNECTED')
+     // Clear chat box
+     const parent = document.getElementById("chatbox");
+     while (parent.firstChild) {
+       parent.firstChild.remove();
+     }
     for (let socket_id in rooms[key]) {
       removePeer(socket_id)
     }
@@ -167,8 +172,8 @@ function init() {
 function connectToRoom() {
   var oldKey = document.getElementById("roomKey").textContent;
   var roomKey = document.getElementById("key").value;
-  if (oldKey != roomKey){
-    disconnectCall()
+  if (roomKey == null && oldKey != roomKey){
+    disconnectCall();
     console.log("Room joined")
     socket.emit('connectToRoom', {
       targetRoom: roomKey,
@@ -184,6 +189,11 @@ function connectToRoom() {
 function disconnectCall() {
   socket.emit('disconnectCall', key);
   socket.emit('disconnect', key);
+   // Clear chat box
+   const parent = document.getElementById("chatbox");
+   while (parent.firstChild) {
+     parent.firstChild.remove();
+   }
 }
 
 function setUsername() {
