@@ -27,39 +27,39 @@ html {
     clear: both;
 }
 
-#web_title{
+#web_title {
     margin-left: 40px;
     margin-top: 20px;
     font-size: 40px;
     font-weight: bold;
 }
 
-#key_user_container{
+#key_user_container {
     float: right;
     margin-right: 70px;
     margin-bottom: 5px;
 }
 
-#key_user_container span{
+#key_user_container span {
     font-size: 20px;
     font-weight: bold;
 }
 
-#username_container{
+#username_container {
     margin-right: 10px;
 }
 
-#userName{
+#userName {
     padding: 5px;
     border: 2px solid black;
     font-size: 16px;
 }
 
-#userName.hidden{
+#userName.hidden {
     display: none;
 }
 
-#edit_user{
+#edit_user {
     background-color: dodgerblue;
     border: none;
     color: white;
@@ -68,14 +68,15 @@ html {
     width: 25px;
 }
 
-#edit_user.hidden{
+#edit_user.hidden {
     display: none;
 }
-#user_label.hidden{
+
+#user_label.hidden {
     margin-right: 10px;
 }
 
-#user_label.hidden{
+#user_label.hidden {
     display: none;
 }
 
@@ -99,7 +100,7 @@ html {
 }
 
 /* Camera */
-video{
+video {
     position: relative;
     vertical-align: middle;
     align-self: center;
@@ -148,7 +149,7 @@ video:before {
 }
 
 /* Video Controls*/
-.controls{
+.controls {
     margin: auto;
     margin-top: 15px;
     width: 95%;
@@ -159,7 +160,8 @@ video:before {
     border-radius: 20px;
     margin-left: 50px;
 }
-.controls button{
+
+.controls button {
     background-color: DodgerBlue;
     border: none;
     color: white;
@@ -167,34 +169,36 @@ video:before {
     font-size: 16px;
     cursor: pointer;
     border-radius: 50%;
-  }
+}
 
-  .controls .unmuted{
+.controls .unmuted {
     padding: 20px 24px;
-  }
+}
 
-  .controls .muted{
+.controls .muted {
     padding: 20px;
-  }
+}
 
 /* Chatbot */
-#join_container{
+#join_container {
     margin-bottom: 5px;
     margin-left: 15px;
     margin-right: 15px;
 }
-#join_container label{
+
+#join_container label {
     font-size: 20px;
     font-weight: bold;
     margin-right: 5px;
 }
-#key{
+
+#key {
     padding: 5px;
     border: 2px solid black;
     font-size: 16px;
 }
 
-#join_container button{
+#join_container button {
     background-color: dodgerblue;
     border: none;
     color: white;
@@ -202,7 +206,7 @@ video:before {
     width: 40px;
 }
 
-#join_container i{
+#join_container i {
     font-size: 20px;
 }
 
@@ -236,15 +240,17 @@ video:before {
     background-color: #E1EFF1;
     overflow-y: scroll;
     overflow-x: hidden;
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }
 
 #chatbox::-webkit-scrollbar {
     display: none;
-  }
+}
 
-#chatbox p{
+#chatbox p {
     margin: 0;
     padding-left: 10px;
     padding-top: 5px;
@@ -272,7 +278,7 @@ video:before {
 
 #chat input:focus {
     outline: none;
-  }
+}
 
 
 .chatbox_bottom {
@@ -288,7 +294,7 @@ video:before {
     border: none;
 }
 
-#chat_send_btn i{
+#chat_send_btn i {
     font-size: 16px;
     padding-top: 2px;
 }
