@@ -160,7 +160,7 @@ function connectToRoom() {
   var oldKey = document.getElementById("roomKey").textContent;
   var roomKey = document.getElementById("key").value;
   if (oldKey != roomKey){
-    disconnectCall()
+    disconnectCall();
     console.log("Room joined")
     socket.emit('connectToRoom', {
       targetRoom: roomKey,
@@ -176,19 +176,31 @@ function connectToRoom() {
 function disconnectCall() {
   socket.emit('disconnectCall', key);
   socket.emit('disconnect', key);
+
+  // Clear chat box
+  const parent = document.getElementById("chatbox")
+  while (parent.firstChild) {
+      parent.firstChild.remove()
+  }
 }
 
 function setUsername() {
   var userField = document.getElementById("userName");
-  userField.readOnly = true;
-  userField.className = "read-only"
-  document.getElementById("edit_user").className = "";
+  var userLabel = document.getElementById("user_label");
+  if(userField.value != ""){
+    userField.readOnly = true;
+    userField.className = "hidden"
+    userLabel.textContent = userField.value;
+    userLabel.className = "";
+    document.getElementById("edit_user").className = "";
+  }
 }
 
 function changeUsername() {
   var userField = document.getElementById("userName");
   userField.readOnly = false;
   userField.className = "";
+  document.getElementById("user_label").className = "hidden";
   document.getElementById("edit_user").className = "hidden";
 }
 

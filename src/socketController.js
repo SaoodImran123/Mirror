@@ -82,23 +82,25 @@ module.exports = (io) => {
             console.log('socket disconnected ' + socket.id + " in room " + roomKey)
 
             socket.broadcast.emit('removePeer', socket.id)
-            console.log(room)
-            delete room[roomKey][socket.id]
+            console.log(room);
+            if(room[roomKey] && room[roomKey][socket.id]){
+                delete room[roomKey][socket.id];
 
-            // Generate a room key
-            key = (Math.random() + 1).toString(36).substring(7);
-            while(room.hasOwnProperty(key)){
+                // Generate a room key
                 key = (Math.random() + 1).toString(36).substring(7);
+                while(room.hasOwnProperty(key)){
+                    key = (Math.random() + 1).toString(36).substring(7);
+                }
+                
+                // Create own room with key
+                room[key] = {};
+                room[key][socket.id] = socket;
+                socket.emit('updateRoomKey', {
+                    oldKey: roomKey,
+                    newKey: key,
+                    leaving: true
+                });
             }
-            
-            // Create own room with key
-            room[key] = {};
-            room[key][socket.id] = socket;
-            socket.emit('updateRoomKey', {
-                oldKey: roomKey,
-                newKey: key,
-                leaving: true
-            });
 
             //socket.emit('initialSocket', key);
         })
