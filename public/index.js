@@ -21,6 +21,7 @@ let localStream = null;
 let peers = {}
 let rooms = {}
 let key = null;
+let webCamStream = null;
 
 // redirect if not https
 if (location.href.substr(0, 5) !== 'https')
@@ -59,7 +60,7 @@ navigator.mediaDevices.enumerateDevices()
     console.log('Received local stream');
     localVideo.srcObject = stream;
     localStream = stream;
-
+    webCamStream = stream;
     init();
   }).catch();
 
@@ -326,18 +327,21 @@ function errorHandler(errorCode){
   }
   navigator.mediaDevices.getDisplayMedia().then(stream => {
     //Replace an existing screen share track
+    const audio = webCamStream.getAudioTracks()[0];
+    NewStream = new MediaStream([audio, stream.getTracks()[0]]);
     for (let peer in rooms[key]){
       for (let track in rooms[key][peer].streams[0].getTracks()){
           console.log("Track found")
-          for (let localTrack in stream.getTracks()){
-            if (rooms[key][peer].streams[0].getTracks()[track].kind === stream.getTracks()[localTrack].kind){
+          for (let localTrack in NewStream.getTracks()){
+            if (rooms[key][peer].streams[0].getTracks()[track].kind === NewStream.getTracks()[localTrack].kind){
               console.log("Replacing with screenshare track")
-              rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[track], stream.getTracks()[localTrack], rooms[key][peer].streams[0]);
+
+              rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[track], NewStream.getTracks()[localTrack], rooms[key][peer].streams[0]);
             }
           }
       }
     }
-    localStream = stream;
+    localStream = NewStream;
 
 
     //Check if dom element exists for local screen share, if it exists replace it, otherwise create a new one.
