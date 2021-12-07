@@ -148,11 +148,16 @@ function init() {
       }
   });
 
+    // Username event listener
+  document.getElementById("userName").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        setUsername();
+      }
+  });
 
-
-
-
-
+  document.getElementById("edit_user").onclick = () => {
+    changeUsername();
+  }
 }
 
 /**
@@ -180,6 +185,27 @@ function disconnectCall() {
   socket.emit('disconnectCall', key);
   socket.emit('disconnect', key);
 }
+
+function setUsername() {
+  var userField = document.getElementById("userName");
+  var userLabel = document.getElementById("user_label");
+  if (userField.value != "") {
+    userField.readOnly = true;
+    userField.className = "hidden"
+    userLabel.textContent = userField.value;
+    userLabel.className = "";
+    document.getElementById("edit_user").className = "";
+  }
+}
+
+function changeUsername() {
+  var userField = document.getElementById("userName");
+  userField.readOnly = false;
+  userField.className = "";
+  document.getElementById("user_label").className = "hidden";
+  document.getElementById("edit_user").className = "hidden";
+}
+
 /**
  * Remove a peer with given socket_id. 
  * Removes the video element and deletes the connection
@@ -422,11 +448,11 @@ function toggleVid() {
 /**
  * Chat functions
  */
-function sendChat() {
+ function sendChat() {
   var text = document.getElementById("chat_text_field");
   console.log("sent: " + text.value);
-  var sent= document.getElementById('userName').textContent + ": " + text.value
-  displayMsg(document.getElementById('userName').textContent, sent)
+  var sent = document.getElementById('userName').value + ": " + text.value
+  displayMsg(document.getElementById('userName').value, sent)
   for (let socket_id in rooms[key]) {
     rooms[key][socket_id].send(sent);
   }
@@ -435,7 +461,7 @@ function sendChat() {
 
 function displayMsg(user, msg) {
   var newMsg = document.createElement("p");
-  newMsg.textContent =  msg;
+  newMsg.textContent = msg;
   document.getElementById('chatbox').appendChild(newMsg);
 }
 
