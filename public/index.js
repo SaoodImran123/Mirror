@@ -172,7 +172,7 @@ function init() {
 function connectToRoom() {
   var oldKey = document.getElementById("roomKey").textContent;
   var roomKey = document.getElementById("key").value;
-  if (roomKey == null && oldKey != roomKey){
+  if (roomKey != "" && oldKey != roomKey){
     disconnectCall();
     console.log("Room joined")
     socket.emit('connectToRoom', {
