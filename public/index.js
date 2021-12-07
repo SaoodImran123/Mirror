@@ -357,7 +357,12 @@ function setScreen() {
           for (let localTrack in stream.getTracks()){
             if (rooms[key][peer].streams[0].getTracks()[track].kind === stream.getTracks()[localTrack].kind){
               console.log("Replacing with screenshare track")
-              rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[track], stream.getTracks()[localTrack], rooms[key][peer].streams[0]);
+              const audio = navigator.mediaDevices.getUserMedia({audio: true});
+              
+              if(audio.length > 0){
+                NewStream = MediaStream([audio.getTracks()[0],stream.getTracks()[0]]);
+                rooms[key][peer].replaceTrack(rooms[key][peer].streams[0].getTracks()[track], NewStream.getTracks()[localTrack], rooms[key][peer].streams[0]);
+              }
             }
           }
       }
