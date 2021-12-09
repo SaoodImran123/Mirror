@@ -117,6 +117,11 @@ function init() {
 
   socket.on('disconnect', () => {
     console.log('GOT DISCONNECTED')
+     // Clear chat box
+     const parent = document.getElementById("chatbox");
+     while (parent.firstChild) {
+       parent.firstChild.remove();
+     }
     for (let socket_id in rooms[key]) {
       removePeer(socket_id)
     }
@@ -173,8 +178,8 @@ function init() {
 function connectToRoom() {
   var oldKey = document.getElementById("roomKey").textContent;
   var roomKey = document.getElementById("key").value;
-  if (oldKey != roomKey){
-    disconnectCall()
+  if (roomKey != "" && oldKey != roomKey){
+    disconnectCall();
     console.log("Room joined")
     socket.emit('connectToRoom', {
       targetRoom: roomKey,
@@ -190,6 +195,11 @@ function connectToRoom() {
 function disconnectCall() {
   socket.emit('disconnectCall', key);
   socket.emit('disconnect', key);
+   // Clear chat box
+   const parent = document.getElementById("chatbox");
+   while (parent.firstChild) {
+     parent.firstChild.remove();
+   }
 }
 
 function setUsername() {
@@ -284,42 +294,6 @@ function addPeer(socket_id, am_initiator) {
 function openPictureMode(el) {
   console.log('opening pip')
   el.requestPictureInPicture()
-}
-
-/**
- * Switches the camera between user and environment. It will just enable the camera 2 cameras not supported.
- */
-function switchMedia() {
-  if (constraints.video.facingMode.ideal === 'user') {
-    constraints.video.facingMode.ideal = 'environment'
-  } else {
-    constraints.video.facingMode.ideal = 'user'
-  }
-
-  const tracks = localStream.getTracks();
-
-  tracks.forEach(function (track) {
-    track.stop()
-  })
-
-  localVideo.srcObject = null
-  navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-
-    for (let socket_id in rooms) {
-      for (let index in rooms[key][socket_id].streams[0].getTracks()) {
-        for (let index2 in stream.getTracks()) {
-          if (rooms[key][socket_id].streams[0].getTracks()[index].kind === stream.getTracks()[index2].kind) {
-            rooms[key][socket_id].replaceTrack(rooms[key][socket_id].streams[0].getTracks()[index], stream.getTracks()[index2], rooms[key][socket_id].streams[0])
-            break;
-          }
-        }
-      }
-    }
-
-    localStream = stream
-    localVideo.srcObject = stream
-
-  })
 }
 
 function errorHandler(errorCode){
@@ -531,18 +505,3 @@ window.addEventListener("load", function (event) {
   Video();
   window.onresize = Video;
 }, false);
-
-// Function to add Camera
-function share() {
-  let screens = document.getElementsByClassName('Screen');
-  if (screens.length == 0) {
-    let Screen = document.createElement('div');
-    Screen.className = 'Screen';
-    document.body.appendChild(Screen);
-    document.body.classList.add('sharing');
-  } else {
-    document.body.removeChild(screens[0]);
-    document.body.classList.remove('sharing');
-  }
-  Dish();
-}
