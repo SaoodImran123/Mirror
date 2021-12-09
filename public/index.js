@@ -42,6 +42,8 @@ const configuration = {
 }
 
 /////////////////////////////////////////////////////////
+//Get devices
+
 
 
 // Check if user has media devices
@@ -55,14 +57,18 @@ navigator.mediaDevices.enumerateDevices()
       audio: mics.length > 0
     };
     return navigator.mediaDevices.getUserMedia(constraints);
-  })
-  .then(stream => {
+  }).catch(error => {
+    console.error('Error accessing media devices.', error);
+    alert("Unable to access media devices, continuing with limited functionality")
+}).then(stream => {
     console.log('Received local stream');
     localVideo.srcObject = stream;
     localStream = stream;
     webCamStream = stream;
     init();
-  }).catch();
+  }).catch(error => {
+    console.error('Error setting up stream', error);
+  });
 
 
 /**
@@ -516,7 +522,7 @@ function setWidth(width, margin) {
   for (var s = 0; s < Cameras.length; s++) {
     Cameras[s].style.width = width + "px";
     Cameras[s].style.margin = margin + "px";
-    Cameras[s].style.height = (width * 0.75) + "px";
+    //Cameras[s].style.height = (width * 0.75) + "px";
   }
 }
 
